@@ -1,0 +1,285 @@
+"use client";
+
+import Image from "next/image";
+import React, { useRef } from "react";
+import {
+  motion,
+  useReducedMotion,
+  useScroll,
+  useTransform,
+} from "framer-motion";
+
+const images = [
+  {
+    src: "/models/para/pic.jpg",
+    alt: "KPANDJI — parallax layer 1",
+  },
+  {
+    src: "/models/para/pic1.jpg",
+    alt: "KPANDJI — parallax layer 2",
+  },
+  {
+    src: "/models/para/pic2.jpg",
+    alt: "KPANDJI — parallax layer 3",
+  },
+  {
+    src: "/models/para/pic3.jpg",
+    alt: "KPANDJI — parallax layer 4",
+  },
+];
+
+export default function Parala() {
+  const sectionRef = useRef<HTMLElement | null>(null);
+  const reduceMotion = useReducedMotion();
+  const { scrollYProgress } = useScroll({
+    target: sectionRef,
+    offset: ["start end", "end start"],
+  });
+
+  // New parallax concept: cinematic pinned scene + floating frames
+  // We intentionally finish the "story" before the user leaves the section.
+  // Mapping 0..0.82 -> 0..1 makes the animation complete earlier.
+  const p = useTransform(scrollYProgress, [0, 0.82], [0, 1]);
+  const sectionBg = useTransform(
+    p,
+    [0, 0.45, 1],
+    ["#050505", "#071018", "#050505"],
+  );
+  const tintA = useTransform(p, [0, 0.5, 1], [0.18, 0.06, 0.14]);
+  const tintB = useTransform(p, [0, 0.5, 1], [0.06, 0.18, 0.08]);
+
+  // Background pan/zoom
+  // Keep the subject readable early (smaller travel range)
+  const bgY = useTransform(p, [0, 1], ["0%", "6%"]);
+  const bgScale = useTransform(p, [0, 1], [1.06, 1.16]);
+
+  // Background reveal happens early (so user sees the car quickly)
+  const bgOpacity = useTransform(p, [0, 0.12, 0.22], [0.0, 0.92, 1]);
+  const bgBlur = useTransform(p, [0, 0.14, 0.24], [18, 6, 0]);
+  const bgBright = useTransform(p, [0, 0.18], [0.82, 1]);
+  const bgContrast = useTransform(p, [0, 0.18], [1.06, 1.12]);
+
+  // Floating frames motion (different depths)
+  const f1x = useTransform(p, [0, 1], reduceMotion ? [0, 0] : [-90, 70]);
+  const f1y = useTransform(p, [0, 1], reduceMotion ? [0, 0] : [80, -40]);
+  const f1r = useTransform(p, [0, 1], reduceMotion ? [0, 0] : [-6, 3]);
+
+  const f2x = useTransform(p, [0, 1], reduceMotion ? [0, 0] : [110, -60]);
+  const f2y = useTransform(p, [0, 1], reduceMotion ? [0, 0] : [30, -70]);
+  const f2r = useTransform(p, [0, 1], reduceMotion ? [0, 0] : [5, -2]);
+
+  const f3x = useTransform(p, [0, 1], reduceMotion ? [0, 0] : [-40, 40]);
+  const f3y = useTransform(p, [0, 1], reduceMotion ? [0, 0] : [120, -110]);
+  const f3r = useTransform(p, [0, 1], reduceMotion ? [0, 0] : [2, -4]);
+
+  // Late slide-out: push the top frames upward before the parallax ends
+  const slideOutTop = useTransform(p, [0.72, 0.92, 1], [0, -120, -260]);
+
+  const framesOpacity = useTransform(p, [0.08, 0.18], [0, 1]);
+
+  // Quote reveal
+  const endOpacity = useTransform(p, [0.72, 0.88], [0, 1]);
+  const endY = useTransform(p, [0.72, 0.88], [22, 0]);
+  const endBlur = useTransform(p, [0.72, 0.88], [12, 0]);
+
+  return (
+    <motion.section
+      ref={sectionRef}
+      aria-label="Parallax reveal"
+      className="relative isolate"
+      style={{ backgroundColor: sectionBg, position: "relative" }}
+    >
+      <div className="mx-auto w-full px-4 sm:px-6 lg:px-8">
+        <div className="relative h-[260vh] py-14 sm:py-16">
+          <div className="sticky top-16 sm:top-20">
+            {/* Single stage div */}
+            <div className="relative h-[74vh] min-h-[560px] w-full overflow-hidden rounded-[28px] border border-[rgba(255,255,255,0.08)] bg-black/20 shadow-[0_26px_70px_rgba(0,0,0,0.55),inset_0_1px_0_rgba(255,255,255,0.06)]">
+              {/* Background image (slow pan/zoom) */}
+              <motion.div
+                className="absolute inset-0 will-change-transform"
+                style={{
+                  y: bgY,
+                  scale: bgScale,
+                  opacity: bgOpacity,
+                  filter: useTransform(
+                    [bgBlur, bgBright, bgContrast],
+                    ([b, br, c]) =>
+                      `blur(${b}px) brightness(${br}) contrast(${c})`,
+                  ),
+                }}
+              >
+                <Image
+                  src={images[0].src}
+                  alt={images[0].alt}
+                  fill
+                  priority={false}
+                  loading="lazy"
+                  fetchPriority="low"
+                  sizes="(max-width: 1024px) 100vw, 1100px"
+                  className="object-cover object-[50%_40%]"
+                />
+              </motion.div>
+
+              {/* Cinematic tints that shift with scroll */}
+              <motion.div
+                aria-hidden
+                className="absolute inset-0"
+                style={{
+                  opacity: tintA,
+                  background:
+                    "radial-gradient(900px 600px at 18% 20%, rgba(201,169,98,0.85), transparent 60%)",
+                }}
+              />
+              <motion.div
+                aria-hidden
+                className="absolute inset-0"
+                style={{
+                  opacity: tintB,
+                  background:
+                    "radial-gradient(1000px 720px at 82% 62%, rgba(138,180,248,0.85), transparent 62%)",
+                }}
+              />
+
+              {/* Floating frames */}
+              <motion.div
+                className="pointer-events-none absolute inset-0"
+                style={{ opacity: framesOpacity }}
+              >
+                <div className="absolute inset-0 perspective-distant">
+                  <motion.div
+                    className="absolute left-[6%] top-[14%] w-[52%] max-w-[560px] overflow-hidden rounded-2xl border border-white/10 bg-black/30 shadow-[0_18px_50px_rgba(0,0,0,0.55)]"
+                    style={{
+                      x: f1x,
+                      y: useTransform(
+                        [f1y, slideOutTop],
+                        ([a, b]) => (a as number) + (b as number),
+                      ),
+                      rotateZ: f1r,
+                      transformStyle: "preserve-3d",
+                    }}
+                  >
+                    <div className="relative aspect-16/10 w-full">
+                      <Image
+                        src={images[1].src}
+                        alt={images[1].alt}
+                        fill
+                        sizes="(max-width: 1024px) 80vw, 560px"
+                        className="object-cover"
+                      />
+                    </div>
+                  </motion.div>
+
+                  <motion.div
+                    className="absolute right-[7%] top-[22%] w-[38%] max-w-[440px] overflow-hidden rounded-2xl border border-white/10 bg-black/30 shadow-[0_18px_50px_rgba(0,0,0,0.55)]"
+                    style={{
+                      x: f2x,
+                      y: useTransform(
+                        [f2y, slideOutTop],
+                        ([a, b]) => (a as number) + (b as number),
+                      ),
+                      rotateZ: f2r,
+                      transformStyle: "preserve-3d",
+                    }}
+                  >
+                    <div className="relative aspect-4/5 w-full">
+                      <Image
+                        src={images[2].src}
+                        alt={images[2].alt}
+                        fill
+                        sizes="(max-width: 1024px) 60vw, 440px"
+                        className="object-cover"
+                      />
+                    </div>
+                  </motion.div>
+
+                  <motion.div
+                    className="absolute bottom-[14%] left-1/2 w-[62%] max-w-[720px] -translate-x-1/2 overflow-hidden rounded-2xl border border-white/10 bg-black/30 shadow-[0_18px_50px_rgba(0,0,0,0.55)]"
+                    style={{
+                      x: f3x,
+                      y: f3y,
+                      rotateZ: f3r,
+                      transformStyle: "preserve-3d",
+                    }}
+                  >
+                    <div className="relative aspect-21/9 w-full">
+                      <Image
+                        src={images[3].src}
+                        alt={images[3].alt}
+                        fill
+                        sizes="(max-width: 1024px) 90vw, 720px"
+                        className="object-cover"
+                      />
+                    </div>
+                  </motion.div>
+                </div>
+              </motion.div>
+
+              {/* Grain + vignette */}
+              <div
+                aria-hidden
+                className="pointer-events-none absolute inset-0 kp-grain opacity-[0.55]"
+              />
+              <div
+                aria-hidden
+                className="pointer-events-none absolute inset-0"
+                style={{
+                  boxShadow:
+                    "inset 0 0 0 1px rgba(255,255,255,0.04), inset 0 -160px 220px rgba(0,0,0,0.65), inset 0 90px 160px rgba(0,0,0,0.30)",
+                }}
+              />
+
+              {/* End quote */}
+              <motion.div
+                className="absolute inset-0 flex items-center justify-center p-6 sm:p-10"
+                style={{
+                  opacity: endOpacity,
+                  y: endY,
+                  filter: useTransform(endBlur, (v) => `blur(${v}px)`),
+                }}
+              >
+                <div className="relative flex max-w-3xl flex-col items-center justify-center px-5 text-center sm:px-8">
+                  <div className="w-full max-w-xl rounded-[22px] border border-white/12 bg-black/35 px-8 py-10 shadow-[0_24px_80px_rgba(0,0,0,0.55),inset_0_1px_0_rgba(255,255,255,0.06),inset_0_0_0_1px_rgba(201,169,98,0.08)] backdrop-blur-md sm:px-12 sm:py-12">
+                    <div
+                      aria-hidden
+                      className="mx-auto mb-7 flex w-full max-w-[200px] items-center gap-3"
+                    >
+                      <span className="h-px flex-1 bg-linear-to-r from-transparent via-kp-gold/45 to-kp-gold/20" />
+                      <span className="size-1.5 shrink-0 rounded-full bg-kp-gold/90 shadow-[0_0_14px_rgba(201,169,98,0.45)]" />
+                      <span className="h-px flex-1 bg-linear-to-l from-transparent via-kp-gold/45 to-kp-gold/20" />
+                    </div>
+                    <p className="font-sans text-2xl font-semibold uppercase tracking-[0.2em] text-amber-600 sm:text-3xl sm:tracking-[0.22em] md:text-4xl md:tracking-[0.24em]">
+                      KPANDJI AUTOMOBILES
+                    </p>
+                    <p
+                      className="mt-7 font-serif text-[clamp(26px,3.2vw,48px)] font-medium leading-[1.08] tracking-[-0.02em] text-balance text-kp-accent [text-shadow:0_2px_40px_rgba(0,0,0,0.55)]"
+                      lang="fr"
+                    >
+                      <span className="block sm:inline">
+                        La force d&apos;une racine,
+                      </span>{" "}
+                      <span className="mt-1 block text-white/95 sm:mt-0 sm:inline">
+                        l&apos;élan d&apos;une nation
+                      </span>
+                    </p>
+                    <div
+                      aria-hidden
+                      className="mx-auto mt-8 h-px w-16 bg-linear-to-r from-transparent via-kp-gold/40 to-transparent opacity-80"
+                    />
+                  </div>
+                </div>
+              </motion.div>
+            </div>
+
+            <div className="mt-5 flex items-center justify-between gap-4">
+             
+              <div
+                aria-hidden
+                className="h-px w-28 bg-linear-to-r from-transparent via-[rgba(201,169,98,0.55)] to-transparent"
+              />
+            </div>
+          </div>
+        </div>
+      </div>
+    </motion.section>
+  );
+}
