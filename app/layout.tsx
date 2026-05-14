@@ -1,7 +1,21 @@
 import type { Metadata } from "next";
+import { Cormorant, DM_Sans } from "next/font/google";
 import "./globals.css";
 import { KpHeader } from "@/components/kp/KpHeader";
 import { KpFooter } from "@/components/kp/KpFooter";
+
+const dmSans = DM_Sans({
+	subsets: ["latin"],
+	variable: "--font-dm-sans",
+	display: "swap",
+});
+
+const cormorant = Cormorant({
+	subsets: ["latin"],
+	variable: "--font-cormorant",
+	display: "swap",
+	weight: ["400", "500", "600"],
+});
 
 export const metadata: Metadata = {
   title: "KPANDJI Motors — Constructeur automobile",
@@ -34,12 +48,12 @@ export default function RootLayout({
   return (
     <html
       lang="fr"
-      className="h-full antialiased"
+      className={`relative h-full antialiased ${dmSans.variable} ${cormorant.variable}`}
       data-scroll-behavior="smooth"
       suppressHydrationWarning
     >
       <body
-        className="min-h-full flex flex-col bg-kp-bg text-kp-accent"
+        className="relative min-h-full flex flex-col bg-kp-bg text-kp-accent"
         suppressHydrationWarning
       >
         <KpHeader />

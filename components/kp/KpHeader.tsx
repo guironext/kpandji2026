@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { useCallback, useEffect, useId, useRef, useState } from "react";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 
@@ -204,6 +205,7 @@ function KpAnimatedLogo() {
                   height={62}
                   className="relative h-9 w-auto sm:h-10 md:h-11"
                   priority
+                  loading="eager"
                   aria-hidden
                 />
               </motion.div>
@@ -265,6 +267,7 @@ export function KpHeader() {
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
+  const pathname = usePathname();
   const searchId = useId();
   const searchInputRef = useRef<HTMLInputElement>(null);
 
@@ -366,7 +369,12 @@ export function KpHeader() {
               <Link
                 key={item.label}
                 href={item.href}
-                className="kp-header-link whitespace-nowrap px-3 py-2 font-sans text-lg font-semibold uppercase tracking-[0.12em] text-white/88 transition-colors hover:text-white 2xl:px-4"
+                aria-current={pathname === item.href ? "page" : undefined}
+                className={`kp-header-link whitespace-nowrap px-3 py-2 font-sans text-lg font-semibold uppercase tracking-[0.12em] transition-colors 2xl:px-4 ${
+                  pathname === item.href
+                    ? "text-white"
+                    : "text-white/80 hover:text-white"
+                }`}
               >
                 {item.label}
               </Link>
@@ -375,6 +383,12 @@ export function KpHeader() {
 
           {/* Right icon cluster — Mercedes search / account / menu */}
           <div className="ml-auto flex items-center gap-0.5 sm:gap-1">
+            <Link
+              href="/contact"
+              className="hidden items-center rounded-full border border-white/15 bg-white/6 px-5 py-2 font-sans text-[11px] font-semibold uppercase tracking-[0.22em] text-white/90 backdrop-blur-sm transition hover:border-white/30 hover:bg-white/9 hover:text-white xl:inline-flex"
+            >
+              Réserver un essai
+            </Link>
             <button
               type="button"
               onClick={() => setSearchOpen(true)}
@@ -501,6 +515,7 @@ export function KpHeader() {
               width={200}
               height={56}
               className="h-10 w-auto opacity-90 sm:h-11"
+              loading="eager"
             />
             <button
               type="button"
@@ -517,7 +532,10 @@ export function KpHeader() {
                 key={item.label}
                 href={item.href}
                 onClick={() => setMenuOpen(false)}
-                className="kp-mobile-link block border-b border-white/6 px-4 py-4 font-sans text-[12px] font-semibold uppercase tracking-[0.22em] text-white/90 transition hover:bg-white/5"
+                aria-current={pathname === item.href ? "page" : undefined}
+                className={`kp-mobile-link block border-b border-white/6 px-4 py-4 font-sans text-[12px] font-semibold uppercase tracking-[0.22em] transition hover:bg-white/5 ${
+                  pathname === item.href ? "text-white" : "text-white/85 hover:text-white"
+                }`}
                 style={{
                   animationDelay: menuOpen ? `${80 + i * 45}ms` : "0ms",
                 }}
@@ -525,6 +543,15 @@ export function KpHeader() {
                 {item.label}
               </Link>
             ))}
+            <div className="px-4 pb-2 pt-6">
+              <Link
+                href="/contact"
+                onClick={() => setMenuOpen(false)}
+                className="inline-flex w-full items-center justify-center rounded-full bg-white px-6 py-3 font-sans text-[11px] font-semibold uppercase tracking-[0.22em] text-black transition hover:bg-white/95"
+              >
+                Réserver un essai
+              </Link>
+            </div>
           </div>
           <p className="border-t border-white/10 px-6 py-4 font-sans text-[10px] uppercase tracking-[0.25em] text-white/35">
             KPANDJI — Constructeur automobile

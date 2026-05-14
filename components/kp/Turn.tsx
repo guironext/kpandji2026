@@ -36,7 +36,7 @@ export default function Turn() {
 
   return (
     <section
-      className="relative isolate overflow-hidden border-t border-white/8 bg-[#030303] py-20 md:py-28 lg:py-32"
+      className="relative isolate overflow-hidden border-t border-white/8 py-20 md:py-28 lg:py-32 bg-gray-50/10"
       aria-labelledby="kp-turn-heading">
       <div
         className="kp-grain pointer-events-none absolute inset-0 opacity-[0.12] mix-blend-overlay md:opacity-[0.16]"

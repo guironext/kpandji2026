@@ -9,10 +9,11 @@
   --kp-silver: #d4d4d8;
   --kp-accent: #e8e4dc;
   --kp-gold: #c9a962;
-  /* Local/system fallbacks (keeps build offline-friendly) */
-  --font-dm-sans: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto,
-    "Helvetica Neue", Arial, "Noto Sans", "Liberation Sans", sans-serif;
-  --font-cormorant: ui-serif, Georgia, Cambria, "Times New Roman", Times, serif;
+  /* Stacks used when `next/font` variables are not applied */
+  --font-sans-fallback: ui-sans-serif, system-ui, -apple-system, "Segoe UI",
+    Roboto, "Helvetica Neue", Arial, "Noto Sans", "Liberation Sans", sans-serif;
+  --font-serif-fallback: ui-serif, Georgia, Cambria, "Times New Roman", Times,
+    serif;
 }
 
 @theme inline {
@@ -23,8 +24,8 @@
   --color-kp-silver: var(--kp-silver);
   --color-kp-accent: var(--kp-accent);
   --color-kp-gold: var(--kp-gold);
-  --font-sans: var(--font-dm-sans);
-  --font-serif: var(--font-cormorant);
+  --font-sans: var(--font-dm-sans, var(--font-sans-fallback));
+  --font-serif: var(--font-cormorant, var(--font-serif-fallback));
 }
 
 html {
@@ -34,7 +35,7 @@ html {
 body {
   background: var(--kp-bg);
   color: var(--kp-accent);
-  font-family: var(--font-dm-sans), system-ui, sans-serif;
+  font-family: var(--font-sans);
   text-rendering: geometricPrecision;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
@@ -150,6 +151,12 @@ body {
 .kp-hero-delay-6 {
   animation-delay: 0.56s;
 }
+.kp-hero-delay-7 {
+  animation-delay: 0.68s;
+}
+.kp-hero-delay-8 {
+  animation-delay: 0.8s;
+}
 
 @media (prefers-reduced-motion: reduce) {
   .kp-hero-reveal {
@@ -157,6 +164,43 @@ body {
     opacity: 1 !important;
     transform: none !important;
   }
+}
+
+/* Hero brand marquee — infinite, GPU-friendly */
+@keyframes kp-marquee {
+  from {
+    transform: translate3d(0, 0, 0);
+  }
+  to {
+    transform: translate3d(-50%, 0, 0);
+  }
+}
+
+.kp-marquee-track {
+  animation: kp-marquee 36s linear infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .kp-marquee-track {
+    animation: none !important;
+  }
+}
+
+/* Hero pulse dot — subtle live signal */
+@keyframes kp-pulse-dot {
+  0%,
+  100% {
+    transform: scale(1);
+    opacity: 0.95;
+  }
+  50% {
+    transform: scale(1.45);
+    opacity: 0.4;
+  }
+}
+
+.kp-pulse-dot {
+  animation: kp-pulse-dot 2.2s ease-in-out infinite;
 }
 
 /* Film grain overlay — luxury / editorial feel (Mercedes-style depth) */
@@ -179,6 +223,32 @@ body {
 
 .kp-scroll-dot {
   animation: kp-scroll-bounce 1.8s ease-in-out infinite;
+}
+
+@keyframes kp-cinematic-zoom {
+  from {
+    transform: scale(1) translate3d(0, 0, 0);
+  }
+  to {
+    transform: scale(1.08) translate3d(0, -1.5%, 0);
+  }
+}
+
+@keyframes kp-light-sweep {
+  0% {
+    transform: translateX(-130%) skewX(-12deg);
+    opacity: 0;
+  }
+  22% {
+    opacity: 0.3;
+  }
+  48% {
+    opacity: 0.16;
+  }
+  100% {
+    transform: translateX(130%) skewX(-12deg);
+    opacity: 0;
+  }
 }
 
 .kp-hide-scrollbar {

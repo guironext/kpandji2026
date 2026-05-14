@@ -7,7 +7,7 @@ export function KpSpotlight() {
   return (
     <section
       id="innovation"
-      className="relative overflow-hidden border-t border-white/6 bg-[#070707]"
+      className="relative scroll-mt-28 overflow-hidden border-t border-white/6 bg-[#070707]"
     >
       <div
         aria-hidden

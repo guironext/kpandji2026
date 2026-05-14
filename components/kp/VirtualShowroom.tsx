@@ -366,6 +366,7 @@ export default function VirtualShowroom() {
                             alt={active.alt}
                             fill
                             priority
+                            loading="eager"
                             sizes="(max-width: 1024px) 100vw, 66vw"
                             className="object-cover object-center"
                           />
@@ -434,6 +435,7 @@ export default function VirtualShowroom() {
                               alt=""
                               fill
                               sizes="120px"
+                              loading={isActive ? "eager" : "lazy"}
                               className="object-cover object-center"
                             />
                             <div className="pointer-events-none absolute inset-0 bg-linear-to-b from-black/0 to-black/45" />
